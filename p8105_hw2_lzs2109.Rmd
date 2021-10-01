@@ -25,15 +25,16 @@ mtw_df = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
 precip18_df = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
                     sheet = "2018 Precipitation",
                     range = "A2:B14") %>% 
-  mutate(year = 2018, Month = month.name)
+  mutate(year = 2018)
 
 precip19_df = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
                     sheet = "2019 Precipitation",
                     range = "A2:B14") %>% 
-  mutate(year = 2019, Month = month.name)
+  mutate(year = 2019)
 
 precip_df = bind_rows(precip18_df, precip19_df) %>% 
   janitor::clean_names() %>% 
+  mutate(month = month.name[month]) %>% 
   relocate(month, year)
 ```
 
@@ -41,3 +42,13 @@ The Mr. Trash Wheel and precipitation data sets both come from the same excel fi
 `r median(pull(filter(mtw_df, year == 2017), sports_balls))` sports balls in 2017.
 The precipitation data set includes information about how much rain was measured per month for the years 2018 and 2019. This is important because the Mr. Trash Wheel website indicates that the level of precipitation influences the amount and type of trash the device collects. Variables in the precipitation dataset include `r names(precip_df)`, and there is data for all twelve months in 2018 and up to June of 2019. For example, in 2018 there was a total of 
 `r sum(pull(precip18_df, Total))` inches of rain for the year.
+
+
+### **Problem 2**
+
+```{r}
+pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>% 
+  separate(mon, into = c("year", "month", "day")) %>% 
+  mutate(month = as.numeric(month), month = month.name[month])
+```
+
