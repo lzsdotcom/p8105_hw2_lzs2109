@@ -49,6 +49,18 @@ The precipitation data set includes information about how much rain was measured
 ```{r}
 pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>% 
   separate(mon, into = c("year", "month", "day")) %>% 
-  mutate(month = as.numeric(month), month = month.name[month])
+  mutate(month = as.numeric(month), 
+         month = month.name[month],
+         president = prez_gop + prez_dem) %>% 
+  select(-prez_gop, -prez_dem, -day)
+
+snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>% 
+  separate(date, into = c("month", "day", "year")) %>% 
+  mutate(month = as.numeric(month), 
+         month = month.name[month]) %>% 
+  select(-day) %>% 
+  relocate(year, month)
+
+unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv")
 ```
 
