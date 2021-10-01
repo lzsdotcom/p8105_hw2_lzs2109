@@ -1,0 +1,9 @@
+---
+title: "Data Science I Homework 2 - lzs2109"
+author: "Louis Sharp"
+date: "10/01/2021"
+output: html_document
+---
+
+### **Problem 1**
+
