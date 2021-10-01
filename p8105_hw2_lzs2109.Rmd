@@ -7,8 +7,18 @@ output: github_document
 
 ### **Problem 1**
 
-```{r, eval = FALSE}
+```{r, message = FALSE}
 library(tidyverse)
 library(readxl)
 ```
+
+```{r}
+mtw_df = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
+                    sheet = "Mr. Trash Wheel",
+                    range = "A2:N408") %>% 
+  janitor::clean_names() %>% 
+  drop_na(dumpster) %>% 
+  mutate(sports_balls = as.integer(sports_balls))
+```
+
 
