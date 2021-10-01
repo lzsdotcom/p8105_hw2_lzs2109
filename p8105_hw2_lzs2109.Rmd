@@ -19,9 +19,7 @@ mtw_df = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
   mutate(sports_balls = as.integer(sports_balls))
-```
 
-```{r}
 precip18_df = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
                     sheet = "2018 Precipitation",
                     range = "A2:B14") %>% 
@@ -61,6 +59,27 @@ snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
   select(-day) %>% 
   relocate(year, month)
 
-unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv")
+unemp_df = read.csv("data/fivethirtyeight_datasets/unemployment.csv")
+
+unemp_tidy_df = pivot_longer(
+  unemp_df,
+  Jan:Dec,
+  names_to = "month",
+  values_to = "percent_unemployed") %>% 
+  janitor::clean_names()
+
+unemp_tidy_months = pull(unemp_tidy_df, month)
+length(unemp_tidy_months)/12
+month_nums = rep(1:12, 68)
+
+unemp_tidy_df = mutate(unemp_tidy_df,
+                       month_nums = month_nums,
+                       month_nums = month.name[month_nums])
+
+#scroll through the data frame to make sure the full name months match the abbreviated ones
+#it looks like they do, so replace the column month with month_nums's values
+
+unemp_tidy_df = mutate(unemp_tidy_df, month = month_nums) %>% 
+  select(-month_nums)
 ```
 
