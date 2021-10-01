@@ -21,4 +21,20 @@ mtw_df = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   mutate(sports_balls = as.integer(sports_balls))
 ```
 
+```{r}
+precip18_df = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
+                    sheet = "2018 Precipitation",
+                    range = "A2:B14") %>% 
+  mutate(year = 2018, Month = month.name)
 
+precip19_df = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
+                    sheet = "2019 Precipitation",
+                    range = "A2:B14") %>% 
+  mutate(year = 2019, Month = month.name)
+
+precip_df = bind_rows(precip18_df, precip19_df) %>% 
+  janitor::clean_names()
+```
+
+The Mr. Trash Wheel and precipitation data sets both come from the same excel file about Baltimore's Mr. Trash Wheel, a device that collects trash from Jones Falls river as it enters Baltimore's Inner Harbor. The trash is then incinerated to provide power to the Baltimore area. The Trash Wheel data set includes temporal details, info on the mass of trash collected, and type of trash collected by the device per dumpster filled, in addition to estimates of power generated as a result. The variables included in the dataset are `r names(mtw_df)`, and includes info on `r nrow(mtw_df)` different dumpsters filled with trash collected by the device, each denoted by a different row.
+The precipitation data set includes information about how much rain was measured per month for the years 2018 and 2019. This is important because the Mr. Trash Wheel website indicates that the amount of precipitation influences the amount and type of trash the device collects. Variables in the precipitation dataset include `r names(precip_df)`, and there is data for all twelve months in 2018 and up to June of 2019. 
