@@ -49,10 +49,14 @@ pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>%
   separate(mon, into = c("year", "month", "day")) %>% 
   mutate(month = as.numeric(month), 
          month = month.name[month],
-         president = prez_gop + prez_dem,
-         year = as.numeric(year)) %>% 
-  select(-prez_gop, -prez_dem, -day)
+         year = as.numeric(year))
 
+gop_or_dem = pull(pols_df, prez_dem)
+gop_or_dem = ifelse(gop_or_dem == 1, "dem", "gop") 
+
+pols_df = mutate(pols_df, president = gop_or_dem) %>% 
+  select(-prez_dem, -prez_gop, -day)
+  
 snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>% 
   separate(date, into = c("month", "day", "year")) %>% 
   mutate(month = as.numeric(month), 
@@ -124,18 +128,17 @@ table(ethnicities) #used to see easily which ethnic group names needed changing
 bby_names = mutate(bby_names, 
                    ethnicity = str_replace(ethnicity, 
                                            "ASIAN AND PACIFIC ISLANDER", "ASIAN AND PACI"),
-                   bby_names,
                    ethnicity = str_replace(ethnicity,
                                            "BLACK NON HISPANIC", "BLACK NON HISP"),
-                   bby_names,
                    ethnicity = str_replace(ethnicity,
-                                           "WHITE NON HISPANIC", "WHITE NON HISP"))
+                                           "WHITE NON HISPANIC", "WHITE NON HISP"),
+                   childs_first_name = str_to_title(childs_first_name))
                    
 ```
 
-```{r, eval = FALSE}
-ethnicities = pull(bby_names, ethnicity)
-table(ethnicities)
+```{r}
+#ethnicities = pull(bby_names, ethnicity)
+#table(ethnicities)
 #first_name = pull(bby_names, childs_first_name)
 #table(first_name) #code chunk used to evalutate if above chunk worked properly
 ```
