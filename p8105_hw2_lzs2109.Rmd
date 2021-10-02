@@ -49,37 +49,58 @@ pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>%
   separate(mon, into = c("year", "month", "day")) %>% 
   mutate(month = as.numeric(month), 
          month = month.name[month],
-         president = prez_gop + prez_dem) %>% 
+         president = prez_gop + prez_dem,
+         year = as.numeric(year)) %>% 
   select(-prez_gop, -prez_dem, -day)
 
 snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>% 
   separate(date, into = c("month", "day", "year")) %>% 
   mutate(month = as.numeric(month), 
-         month = month.name[month]) %>% 
+         month = month.name[month],
+         year = as.numeric(year)) %>% 
   select(-day) %>% 
   relocate(year, month)
+```
 
-unemp_df = read.csv("data/fivethirtyeight_datasets/unemployment.csv")
+```{r}
+#unemp_df = read.csv("data/fivethirtyeight_datasets/unemployment.csv")
 
-unemp_tidy_df = pivot_longer(
-  unemp_df,
-  Jan:Dec,
-  names_to = "month",
-  values_to = "percent_unemployed") %>% 
-  janitor::clean_names()
+#unemp_tidy_df = pivot_longer(
+#  unemp_df,
+#  Jan:Dec,
+#  names_to = "month",
+#  values_to = "percent_unemployed") %>% 
+#  janitor::clean_names()
 
-unemp_tidy_months = pull(unemp_tidy_df, month)
-length(unemp_tidy_months)/12
-month_nums = rep(1:12, 68)
+#unemp_tidy_months = pull(unemp_tidy_df, month)
+#length(unemp_tidy_months)/12
+#month_nums = rep(1:12, 68)
 
-unemp_tidy_df = mutate(unemp_tidy_df,
-                       month_nums = month_nums,
-                       month_nums = month.name[month_nums])
+#unemp_tidy_df = mutate(unemp_tidy_df,
+#                       month_nums = month_nums,
+#                       month_nums = month.name[month_nums])
 
 #scroll through the data frame to make sure the full name months match the abbreviated ones
 #it looks like they do, so replace the column month with month_nums's values
 
-unemp_tidy_df = mutate(unemp_tidy_df, month = month_nums) %>% 
-  select(-month_nums)
+#unemp_tidy_df = mutate(unemp_tidy_df, month = month_nums) %>% 
+#  select(-month_nums)
 ```
+
+That's kind of a big code chunk above, so I'm going to make a new one for the merges.
+First, we have to convert years in snp_df from 2 digits to 4 digits.
+
+```{r}
+snp_df_yrs_vec = pull(snp_df, year)
+snp_df_yrs_vec = ifelse(snp_df_yrs_vec > 40, 
+                        snp_df_yrs_vec + 1900, snp_df_yrs_vec + 2000)
+snp_df = mutate(snp_df, year = snp_df_yrs_vec) #change snp_df years to 4 digits
+```
+
+```{r}
+pols_snp_df = left_join(pols_df, snp_df, by = c("year", "month")) 
+#merge pol_df and snap_df by year and month keys
+
+```
+
 
