@@ -136,14 +136,15 @@ bby_names = mutate(bby_names,
                    
 ```
 
-```{r}
-#ethnicities = pull(bby_names, ethnicity)
-#table(ethnicities)
-#first_name = pull(bby_names, childs_first_name)
-#table(first_name) #code chunk used to evalutate if above chunk worked properly
+```{r, eval = FALSE}
+ethnicities = pull(bby_names, ethnicity)
+table(ethnicities)
+first_name = pull(bby_names, childs_first_name)
+table(first_name) #code chunk used to evalutate if above chunk worked properly
 ```
 
 ```{r}
-#bby_names = distinct(bby_names)
+table(duplicated(bby_names)) #count duplicated rows, 12181 are false (not duplicated)
+bby_names = distinct(bby_names)
 ```
 
