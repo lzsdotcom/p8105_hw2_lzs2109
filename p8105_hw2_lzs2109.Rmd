@@ -110,4 +110,33 @@ These three dataset contain information and data surrounding politics and histor
 
 ### **Problem 3**
 
+```{r}
+bby_names = read_csv("data/Popular_Baby_Names.csv") %>% 
+  janitor::clean_names()
+```
 
+```{r, eval = FALSE}
+ethnicities = pull(bby_names, ethnicity)
+table(ethnicities) #used to see easily which ethnic group names needed changing
+```
+
+```{r}
+bby_names = mutate(bby_names, 
+                   ethnicity = str_replace(ethnicity, 
+                                           "ASIAN AND PACIFIC ISLANDER", "ASIAN AND PACI"),
+                   bby_names,
+                   ethnicity = str_replace(ethnicity,
+                                           "BLACK NON HISPANIC", "BLACK NON HISP"),
+                   bby_names,
+                   ethnicity = str_replace(ethnicity,
+                                           "WHITE NON HISPANIC", "WHITE NON HISP"),
+                   bby_names, childs_first_name = str_to_title(childs_first_name))
+                   
+```
+
+```{r, eval = FALSE}
+ethnicities = pull(bby_names, ethnicity)
+table(ethnicities)
+first_name = pull(bby_names, childs_first_name)
+table(first_name) #code chunk used to evalutate if above chunk worked properly
+```
