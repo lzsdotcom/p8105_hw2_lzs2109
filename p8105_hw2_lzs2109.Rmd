@@ -63,28 +63,28 @@ snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
 ```
 
 ```{r}
-#unemp_df = read.csv("data/fivethirtyeight_datasets/unemployment.csv")
+unemp_df = read_excel("data/fivethirtyeight_datasets/unemployment.xlsx")
 
-#unemp_tidy_df = pivot_longer(
-#  unemp_df,
-#  Jan:Dec,
-#  names_to = "month",
-#  values_to = "percent_unemployed") %>% 
-#  janitor::clean_names()
+unemp_tidy_df = pivot_longer(
+  unemp_df,
+  Jan:Dec,
+  names_to = "month",
+  values_to = "percent_unemployed") %>% 
+  janitor::clean_names()
 
-#unemp_tidy_months = pull(unemp_tidy_df, month)
-#length(unemp_tidy_months)/12
-#month_nums = rep(1:12, 68)
+unemp_tidy_months = pull(unemp_tidy_df, month)
+length(unemp_tidy_months)/12
+month_nums = rep(1:12, 68)
 
-#unemp_tidy_df = mutate(unemp_tidy_df,
-#                       month_nums = month_nums,
-#                       month_nums = month.name[month_nums])
+unemp_tidy_df = mutate(unemp_tidy_df,
+                       month_nums = month_nums,
+                       month_nums = month.name[month_nums])
 
 #scroll through the data frame to make sure the full name months match the abbreviated ones
 #it looks like they do, so replace the column month with month_nums's values
 
-#unemp_tidy_df = mutate(unemp_tidy_df, month = month_nums) %>% 
-#  select(-month_nums)
+unemp_tidy_df = mutate(unemp_tidy_df, month = month_nums) %>% 
+  select(-month_nums)
 ```
 
 That's kind of a big code chunk above, so I'm going to make a new one for the merges.
@@ -100,7 +100,12 @@ snp_df = mutate(snp_df, year = snp_df_yrs_vec) #change snp_df years to 4 digits
 ```{r}
 pols_snp_df = left_join(pols_df, snp_df, by = c("year", "month")) 
 #merge pol_df and snap_df by year and month keys
-
+pols_snp_unemp_df = left_join(pols_snp_df, unemp_tidy_df, by = c("year", "month"))
+#merging unemp_tidy_df with same keys
 ```
+
+
+
+### **Problem 3**
 
 
