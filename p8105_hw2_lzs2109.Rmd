@@ -75,9 +75,6 @@ unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
   select(-month_nums)
 ```
 
-That's kind of a big code chunk above, so I'm going to make a new one for the merges.
-First, we have to convert years in snp_df from 2 digits to 4 digits.
-
 ```{r}
 snp_df_yrs_vec = pull(snp_df, year)
 snp_df_yrs_vec = ifelse(snp_df_yrs_vec > 40, 
