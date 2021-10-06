@@ -49,14 +49,10 @@ pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>%
   separate(mon, into = c("year", "month", "day")) %>% 
   mutate(month = as.numeric(month), 
          month = month.name[month],
-         year = as.numeric(year))
-
-gop_or_dem = pull(pols_df, prez_dem)
-gop_or_dem = ifelse(gop_or_dem == 1, "dem", "gop") 
-
-pols_df = mutate(pols_df, president = gop_or_dem) %>% 
+         year = as.numeric(year),
+         president = ifelse(prez_dem == 1, "dem", "gop")) %>% 
   select(-prez_dem, -prez_gop, -day)
-  
+
 snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>% 
   separate(date, into = c("month", "day", "year")) %>% 
   mutate(month = as.numeric(month), 
@@ -67,27 +63,15 @@ snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
 ```
 
 ```{r}
-unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv")
-
-unemp_tidy_df = pivot_longer(
-  unemp_df,
+unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>% 
+  pivot_longer(
   Jan:Dec,
   names_to = "month",
   values_to = "percent_unemployed") %>% 
-  janitor::clean_names()
-
-unemp_tidy_months = pull(unemp_tidy_df, month)
-length(unemp_tidy_months)/12
-month_nums = rep(1:12, 68)
-
-unemp_tidy_df = mutate(unemp_tidy_df,
-                       month_nums = month_nums,
-                       month_nums = month.name[month_nums])
-
-#scroll through the data frame to make sure the full name months match the abbreviated ones
-#it looks like they do, so replace the column month with month_nums's values
-
-unemp_tidy_df = mutate(unemp_tidy_df, month = month_nums) %>% 
+  janitor::clean_names() %>% 
+  mutate(month_nums = rep(1:12, length(month)/12),
+         month_nums = month.name[month_nums],
+         month = month_nums) %>% 
   select(-month_nums)
 ```
 
@@ -104,11 +88,11 @@ snp_df = mutate(snp_df, year = snp_df_yrs_vec) #change snp_df years to 4 digits
 ```{r}
 pols_snp_df = left_join(pols_df, snp_df, by = c("year", "month")) 
 #merge pol_df and snap_df by year and month keys
-pols_snp_unemp_df = left_join(pols_snp_df, unemp_tidy_df, by = c("year", "month"))
-#merging unemp_tidy_df with same keys
+pols_snp_unemp_df = left_join(pols_snp_df, unemp_df, by = c("year", "month"))
+#merging unemp_df with same keys
 ```
 
-These three dataset contain information and data surrounding politics and history in the United States. The pols dataframe contains info on the number of senators, governors, and representatives from `r min(pull(pols_df, year))` to `r max(pull(pols_df, year))` grouped by their political affiliation, republican or democrat. It also included political affiliation of the president until we merged the dem and gop columns into one president column (for which there are two during Aug-Dec 1974, presumably when Nixon was impeached and Ford took office). The snp dataframe contains data on the closing numbers of the S&P stock market index for every month between `r min(pull(snp_df, year))` to `r max(pull(snp_df, year))`, as a general measure of the state of the economy during those times. Finally, the unemployment dataframe includes the percentage of unemployment in the U.S. for months between the years `r min(pull(unemp_tidy_df, year))` to `r max(pull(unemp_tidy_df, year))`. Since these three datasets incorporate which political party held more power during any given month/year, the state of the economy by a general measure, and the percent of unemployed, it seemed interesting to merge them and compare how political party's power may have affected the economy and unemployment rates. The resulting dataframe incorporates 
+These three dataset contain information and data surrounding politics and history in the United States. The pols dataframe contains info on the number of senators, governors, and representatives from `r min(pull(pols_df, year))` to `r max(pull(pols_df, year))` grouped by their political affiliation, republican or democrat. It also included political affiliation of the president until we merged the dem and gop columns into one president column (for which there are two during Aug-Dec 1974, presumably when Nixon was impeached and Ford took office). The snp dataframe contains data on the closing numbers of the S&P stock market index for every month between `r min(pull(snp_df, year))` to `r max(pull(snp_df, year))`, as a general measure of the state of the economy during those times. Finally, the unemployment dataframe includes the percentage of unemployment in the U.S. for months between the years `r min(pull(unemp_df, year))` to `r max(pull(unemp_df, year))`. Since these three datasets incorporate which political party held more power during any given month/year, the state of the economy by a general measure, and the percent of unemployed, it seemed interesting to merge them and compare how political party's power may have affected the economy and unemployment rates. The resulting dataframe incorporates 
 `r nrow(pols_snp_unemp_df)` observations for the variables `r names(pols_snp_unemp_df)` between the years `r min(pull(pols_snp_unemp_df, year))` to `r max(pull(pols_snp_unemp_df, year))`.
 
 
