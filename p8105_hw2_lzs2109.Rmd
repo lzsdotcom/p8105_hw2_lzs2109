@@ -57,12 +57,11 @@ snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
   separate(date, into = c("month", "day", "year")) %>% 
   mutate(month = as.numeric(month), 
          month = month.name[month],
-         year = as.numeric(year)) %>% 
+         year = as.numeric(year),
+         year = ifelse(year > 40, year + 1900, year + 2000)) %>% 
   select(-day) %>% 
   relocate(year, month)
-```
 
-```{r}
 unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>% 
   pivot_longer(
   Jan:Dec,
@@ -73,13 +72,6 @@ unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
          month_nums = month.name[month_nums],
          month = month_nums) %>% 
   select(-month_nums)
-```
-
-```{r}
-snp_df_yrs_vec = pull(snp_df, year)
-snp_df_yrs_vec = ifelse(snp_df_yrs_vec > 40, 
-                        snp_df_yrs_vec + 1900, snp_df_yrs_vec + 2000)
-snp_df = mutate(snp_df, year = snp_df_yrs_vec) #change snp_df years to 4 digits
 ```
 
 ```{r}
