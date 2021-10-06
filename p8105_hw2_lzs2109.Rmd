@@ -72,53 +72,33 @@ unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
          month_nums = month.name[month_nums],
          month = month_nums) %>% 
   select(-month_nums)
-```
 
-```{r}
 pols_snp_df = left_join(pols_df, snp_df, by = c("year", "month")) 
 #merge pol_df and snap_df by year and month keys
 pols_snp_unemp_df = left_join(pols_snp_df, unemp_df, by = c("year", "month"))
 #merging unemp_df with same keys
 ```
 
-These three dataset contain information and data surrounding politics and history in the United States. The pols dataframe contains info on the number of senators, governors, and representatives from `r min(pull(pols_df, year))` to `r max(pull(pols_df, year))` grouped by their political affiliation, republican or democrat. It also included political affiliation of the president until we merged the dem and gop columns into one president column (for which there are two during Aug-Dec 1974, presumably when Nixon was impeached and Ford took office). The snp dataframe contains data on the closing numbers of the S&P stock market index for every month between `r min(pull(snp_df, year))` to `r max(pull(snp_df, year))`, as a general measure of the state of the economy during those times. Finally, the unemployment dataframe includes the percentage of unemployment in the U.S. for months between the years `r min(pull(unemp_df, year))` to `r max(pull(unemp_df, year))`. Since these three datasets incorporate which political party held more power during any given month/year, the state of the economy by a general measure, and the percent of unemployed, it seemed interesting to merge them and compare how political party's power may have affected the economy and unemployment rates. The resulting dataframe incorporates 
-`r nrow(pols_snp_unemp_df)` observations for the variables `r names(pols_snp_unemp_df)` between the years `r min(pull(pols_snp_unemp_df, year))` to `r max(pull(pols_snp_unemp_df, year))`.
+These three dataset contain information and data surrounding politics and history in the United States. The pols dataframe contains info on the number of senators, governors, and representatives from `r min(pull(pols_df, year))` to `r max(pull(pols_df, year))` grouped by their political affiliation, republican or democrat. It also included political affiliation of the president until we merged the dem and gop columns into one president column (for which there are two during Aug-Dec 1974, presumably when Nixon was impeached and Ford took office). The snp dataframe contains data on the closing numbers of the S&P stock market index for every month between `r min(pull(snp_df, year))` to `r max(pull(snp_df, year))`, as a general measure of the state of the economy during those times. Finally, the unemployment dataframe includes the percentage of unemployment in the U.S. for months between the years `r min(pull(unemp_df, year))` to `r max(pull(unemp_df, year))`. Since these three datasets incorporate which political party held more power during any given month/year, the state of the economy by a general measure, and the percent of unemployed, it seemed interesting to merge them and compare how political party's power may have affected the economy and unemployment rates. The resulting dataframe incorporates `r nrow(pols_snp_unemp_df)` observations for the variables `r names(pols_snp_unemp_df)` between the years `r min(pull(pols_snp_unemp_df, year))` to `r max(pull(pols_snp_unemp_df, year))`.
 
 
 ### **Problem 3**
 
 ```{r}
 bby_names = read_csv("data/Popular_Baby_Names.csv") %>% 
-  janitor::clean_names()
-```
-
-```{r, eval = FALSE}
-ethnicities = pull(bby_names, ethnicity)
-table(ethnicities) #used to see easily which ethnic group names needed changing
+  janitor::clean_names() %>% 
+  mutate(ethnicity = str_replace_all(ethnicity, c("ASIAN AND PACIFIC ISLANDER" = "ASIAN AND PACI",
+                                                  "BLACK NON HISPANIC" = "BLACK NON HISP",
+                                                  "WHITE NON HISPANIC" = "WHITE NON HISP")),
+         childs_first_name = str_to_title(childs_first_name)) %>% 
+  distinct()
 ```
 
 ```{r}
-bby_names = mutate(bby_names, 
-                   ethnicity = str_replace(ethnicity, 
-                                           "ASIAN AND PACIFIC ISLANDER", "ASIAN AND PACI"),
-                   ethnicity = str_replace(ethnicity,
-                                           "BLACK NON HISPANIC", "BLACK NON HISP"),
-                   ethnicity = str_replace(ethnicity,
-                                           "WHITE NON HISPANIC", "WHITE NON HISP"),
-                   childs_first_name = str_to_title(childs_first_name))
-                   
-```
-
-```{r, eval = FALSE}
 ethnicities = pull(bby_names, ethnicity)
 table(ethnicities)
 #first_name = pull(bby_names, childs_first_name)
 #table(first_name) #code chunk used to evalutate if above chunk worked properly
-```
-
-```{r}
-table(duplicated(bby_names)) #count duplicated rows, 12181 are false (not duplicated)
-bby_names = distinct(bby_names)
 ```
 
 ```{r}
