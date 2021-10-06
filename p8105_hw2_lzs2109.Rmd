@@ -67,7 +67,7 @@ snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
 ```
 
 ```{r}
-unemp_df = read_excel("data/fivethirtyeight_datasets/unemployment.xlsx")
+unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv")
 
 unemp_tidy_df = pivot_longer(
   unemp_df,
