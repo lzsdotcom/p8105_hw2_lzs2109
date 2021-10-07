@@ -44,7 +44,7 @@ The precipitation data set includes information about how much rain was measured
 
 ### **Problem 2**
 
-```{r}
+```{r, message = FALSE}
 pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>% 
   separate(mon, into = c("year", "month", "day")) %>% 
   mutate(month = as.numeric(month), 
@@ -87,37 +87,31 @@ These three dataset contain information and data surrounding politics and histor
 ```{r}
 bby_names = read_csv("data/Popular_Baby_Names.csv") %>% 
   janitor::clean_names() %>% 
-  mutate(ethnicity = str_replace_all(ethnicity, c("ASIAN AND PACIFIC ISLANDER" = "ASIAN AND PACI",
-                                                  "BLACK NON HISPANIC" = "BLACK NON HISP",
-                                                  "WHITE NON HISPANIC" = "WHITE NON HISP")),
-         childs_first_name = str_to_title(childs_first_name)) %>% 
+  mutate(ethnicity = str_replace_all(ethnicity, c("PACI$" = "PACIFIC ISLANDER",
+                                                  "NON HISP$" = "NON HISPANIC")),
+         childs_first_name = str_to_title(childs_first_name),
+         gender = str_to_title(gender),
+         ethnicity = str_to_title(ethnicity)) %>% 
   distinct()
-```
 
-```{r}
-ethnicities = pull(bby_names, ethnicity)
-table(ethnicities)
-#first_name = pull(bby_names, childs_first_name)
-#table(first_name) #code chunk used to evalutate if above chunk worked properly
-```
-
-```{r}
-olivia_popularity = filter(bby_names, childs_first_name == "Olivia") %>% 
+olivia_popularity = bby_names %>% 
+  filter(childs_first_name == "Olivia") %>% 
   select(-childs_first_name, -gender, -count) %>% 
   pivot_wider(names_from = "year_of_birth", values_from = "rank")
-```
 
-```{r}
-popular_male_names = filter(bby_names, gender == "MALE",
-                            rank == 1) %>% 
+popular_male_names = bby_names %>% 
+  filter(gender == "Male",
+         rank == 1) %>% 
   select(-gender, -count) %>% 
-  pivot_wider(names_from = "year_of_birth", values_from = "rank")
+  pivot_wider(names_from = "year_of_birth", 
+              values_from = "childs_first_name")
 ```
 
 ```{r}
-white_males_2016 = filter(bby_names, ethnicity == "WHITE NON HISP",
-                          gender == "MALE",
-                          year_of_birth == 2016)
+white_males_2016 = bby_names %>% 
+  filter(ethnicity == "White Non Hispanic",
+         gender == "Male",
+         year_of_birth == 2016)
 
 ggplot(white_males_2016, aes(x = rank, y = count)) + geom_point()
 ```
