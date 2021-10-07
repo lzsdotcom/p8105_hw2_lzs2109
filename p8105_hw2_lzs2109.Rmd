@@ -97,7 +97,7 @@ bby_names = read_csv("data/Popular_Baby_Names.csv") %>%
 olivia_popularity = bby_names %>% 
   filter(childs_first_name == "Olivia") %>% 
   select(-childs_first_name, -gender, -count) %>% 
-  pivot_wider(names_from = "year_of_birth", values_from = "rank")
+  pivot_wider(names_from = "year_of_birth", names_prefix = "rank_", values_from = "rank")
 
 popular_male_names = bby_names %>% 
   filter(gender == "Male",
