@@ -54,11 +54,12 @@ pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>%
 snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>% 
   separate(date, into = c("month", "day", "year")) %>% 
   mutate(month = as.numeric(month), 
-         month = month.name[month],
          year = as.numeric(year),
          year = ifelse(year > 40, year + 1900, year + 2000)) %>% 
   select(-day) %>% 
-  relocate(year, month)
+  relocate(year, month) %>% 
+  arrange(year, month) %>% 
+  mutate(month = month.name[month])
 
 unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>% 
   pivot_longer(
@@ -66,10 +67,10 @@ unemp_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
   names_to = "month",
   values_to = "percent_unemployed") %>% 
   janitor::clean_names() %>% 
-  mutate(month_nums = rep(1:12, length(month)/12),
-         month_nums = month.name[month_nums],
-         month = month_nums) %>% 
-  select(-month_nums)
+  mutate(month_nums = rep(1:12, length(month)/12), #create column with numbers for months
+         month_nums = month.name[month_nums], #change those numbers to full month names
+         month = month_nums) %>% #replace abbreviated month names with full month names
+  select(-month_nums) #remove the intermediate column
 
 pols_snp_df = left_join(pols_df, snp_df, by = c("year", "month")) 
 #merge pol_df and snap_df by year and month keys
@@ -90,14 +91,14 @@ bby_names = read_csv("data/Popular_Baby_Names.csv") %>%
          childs_first_name = str_to_title(childs_first_name),
          gender = str_to_title(gender),
          ethnicity = str_to_title(ethnicity)) %>% 
-  distinct()
+  distinct() #maybe recode() would have worked instead of str_replace_all ..?
 
-olivia_popularity = bby_names %>% 
+olivia_popularity = bby_names %>% #since the df is named olivia, didnt include in column title
   filter(childs_first_name == "Olivia") %>% 
   select(-childs_first_name, -gender, -count) %>% 
   pivot_wider(names_from = "year_of_birth", names_prefix = "rank_", values_from = "rank")
 
-popular_male_names = bby_names %>% 
+popular_male_names = bby_names %>% #same rationale as olivia df for column titles
   filter(gender == "Male",
          rank == 1) %>% 
   select(-gender, -count) %>% 
@@ -111,6 +112,11 @@ white_males_2016 = bby_names %>%
          gender == "Male",
          year_of_birth == 2016)
 
-ggplot(white_males_2016, aes(x = rank, y = count)) + geom_point()
+white_males_2016 %>% 
+  ggplot(aes(x = rank, y = count)) + 
+  geom_point() +
+  labs(x = "Rank in Popularity",
+       y = "Number of Children With Name",
+       title = "Male, White Non-Hispanics Born in 2016 ")
 ```
 
